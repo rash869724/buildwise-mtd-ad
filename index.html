@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Buildwise Accounting</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;background:#111;display:flex;justify-content:center;font-family:'Inter',sans-serif;}
+#app{background:#111;width:100%;max-width:390px;min-height:100vh;display:flex;flex-direction:column;}
+.screen{display:none;flex-direction:column;flex:1;}
+.screen.on{display:flex;}
+
+.top-strip{background:#F5C800;padding:12px 20px 10px;display:flex;flex-direction:column;align-items:flex-start;}
+.ts-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#111;letter-spacing:0.05em;line-height:1;}
+.ts-tag{font-size:11px;color:rgba(0,0,0,0.55);font-weight:600;letter-spacing:0.04em;margin-top:2px;}
+
+.hero{background:#111;padding:36px 20px 24px;display:flex;flex-direction:column;align-items:flex-start;}
+.hero-hl{font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:0.92;color:#fff;letter-spacing:0.02em;margin-bottom:20px;}
+.hero-hl .y{color:#F5C800;}
+
+.urgency-strip{width:100%;background:#1a1a1a;border:1px solid rgba(245,200,0,0.25);border-left:4px solid #F5C800;border-radius:10px;padding:14px 16px;margin-bottom:36px;display:flex;align-items:center;gap:14px;}
+.urg-dot{width:10px;height:10px;border-radius:50%;background:#F5C800;flex-shrink:0;animation:pdot 1.6s ease-in-out infinite;}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+.urg-text{}
+.urg-main{font-size:14px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:3px;}
+.urg-main span{color:#F5C800;}
+.urg-sub{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.4;}
+
+.who-section{padding:0 20px 36px;}
+.who-label{font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;}
+.role-btns{display:flex;flex-direction:column;gap:10px;}
+.rb{background:#1a1a1a;border:1.5px solid rgba(245,200,0,0.15);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;width:100%;text-align:left;transition:border-color 0.2s,background 0.15s,transform 0.1s;}
+.rb:hover,.rb:active{border-color:#F5C800;background:#202020;transform:scale(0.99);}
+.rb-icon{width:50px;height:50px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;}
+.rb-info{flex:1;}
+.rb-title{font-family:'Bebas Neue',sans-serif;font-size:21px;color:#fff;letter-spacing:0.04em;margin-bottom:3px;}
+.rb-sub{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.4;font-weight:400;}
+.rb-arr{width:30px;height:30px;flex-shrink:0;background:rgba(245,200,0,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#F5C800;font-size:17px;}
+
+#s2{background:#111;padding-bottom:36px;}
+.s2-top{background:#F5C800;padding:11px 18px;display:flex;align-items:center;gap:10px;}
+.s2-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#111;letter-spacing:0.05em;}
+.s2-pill{background:#111;color:#F5C800;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.04em;}
+.s2-back-btn{margin-left:auto;font-size:13px;color:rgba(0,0,0,0.5);background:none;border:none;cursor:pointer;font-weight:600;}
+
+.s2-hero{padding:24px 20px 14px;}
+.s2-hl{font-family:'Bebas Neue',sans-serif;font-size:42px;color:#fff;line-height:1.05;letter-spacing:0.03em;margin-bottom:6px;opacity:0;transform:translateY(10px);transition:opacity 0.5s,transform 0.5s;}
+.s2-hl span{color:#F5C800;}
+.s2-hl.v{opacity:1;transform:translateY(0);}
+.s2-sub{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;opacity:0;transition:opacity 0.5s 0.2s;}
+.s2-sub.v{opacity:1;}
+
+.svcs-wrap{padding:0 20px 90px;}
+.sec-lbl{display:flex;align-items:center;gap:10px;margin:18px 0 10px;opacity:0;transition:opacity 0.4s;}
+.sec-lbl.v{opacity:1;}
+.sec-txt{font-family:'Bebas Neue',sans-serif;font-size:14px;color:#F5C800;letter-spacing:0.12em;white-space:nowrap;}
+.sec-line{flex:1;height:1px;background:rgba(245,200,0,0.15);}
+
+.svc{background:#1a1a1a;border:1px solid rgba(255,255,255,0.06);border-left:3px solid #F5C800;border-radius:8px;padding:14px 15px;margin-bottom:8px;opacity:0;transform:translateX(-12px);transition:opacity 0.4s,transform 0.4s;}
+.svc.v{opacity:1;transform:translateX(0);}
+.svc-t{font-size:14px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3;}
+.svc-d{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.55;}
+.svc-d b{color:#F5C800;font-weight:600;}
+
+.cta-wrap{display:none;}
+.cta-wrap.v{opacity:1;}
+.cta{width:100%;background:#F5C800;color:#111;border:none;border-radius:10px;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.05em;cursor:pointer;transition:opacity 0.2s,transform 0.1s;}
+.cta:active{transform:scale(0.98);opacity:0.9;}
+
+.form-input{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:13px 14px;font-size:14px;color:#fff;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;}
+.form-input::placeholder{color:rgba(255,255,255,0.25);}
+.form-input:focus{border-color:rgba(245,200,0,0.5);}
+
+.time-sel{background:#1a1a1a;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 8px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif;text-align:center;}
+.time-sel.active{background:rgba(245,200,0,0.1);border-color:#F5C800;color:#F5C800;}
+
+.restart-btn{font-size:12px;color:rgba(255,255,255,0.3);cursor:pointer;text-decoration:underline;background:none;border:none;padding:4px 0;text-align:center;}
+.restart-btn:hover{color:rgba(255,255,255,0.5);}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SCREEN 1 -->
+  <div class="screen on" id="s1">
+    <div class="top-strip">
+      <div class="ts-logo">Buildwise Accounting</div>
+      <div class="ts-tag">Built for builders</div>
+    </div>
+    <div class="hero">
+      <div class="hero-hl">MTD<br>IS<br><span class="y">COMING.</span></div>
+      <div class="urgency-strip">
+        <div class="urg-dot"></div>
+        <div class="urg-text">
+          <div class="urg-main">HMRC is changing the rules. A business update, submitted every quarter. <span>Four times a year.</span></div>
+          <div class="urg-sub">Earning over £50k? You need to be sorted. Now.</div>
+        </div>
+      </div>
+    </div>
+    <div class="who-section">
+      <div class="who-label">Who are you?</div>
+      <div class="role-btns">
+        <button class="rb" onclick="goMain('contractor')">
+          <div class="rb-icon" style="background:#1e1a00;border:1.5px solid rgba(245,200,0,0.35);">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="3" y="19" width="24" height="3" rx="1.5" fill="#F5C800"/><path d="M15 5C9 5 5 10 5 15v4h20v-4C25 10 21 5 15 5z" fill="#F5C800"/><rect x="13" y="3" width="4" height="4" rx="2" fill="#c8a200"/><path d="M11 15l3 3 5-5" stroke="#1a1a00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="rb-info">
+            <div class="rb-title">Main Contractor</div>
+            <div class="rb-sub">Running jobs, managing subbies</div>
+          </div>
+          <div class="rb-arr">›</div>
+        </button>
+        <button class="rb" onclick="goMain('subcontractor')">
+          <div class="rb-icon" style="background:#1a0800;border:1.5px solid rgba(230,120,40,0.35);">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="3" y="19" width="24" height="3" rx="1.5" fill="#e07820"/><path d="M15 5C9 5 5 10 5 15v4h20v-4C25 10 21 5 15 5z" fill="#e07820"/><rect x="13" y="3" width="4" height="4" rx="2" fill="#b05a10"/><rect x="10" y="14" width="10" height="2.5" rx="1.25" fill="#1a0800"/></svg>
+          </div>
+          <div class="rb-info">
+            <div class="rb-title">Subcontractor</div>
+            <div class="rb-sub">Self employed, working under CIS</div>
+          </div>
+          <div class="rb-arr">›</div>
+        </button>
+        <button class="rb" onclick="goMain('both')">
+          <div class="rb-icon" style="background:#001a08;border:1.5px solid rgba(76,218,110,0.3);">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="5" y="20" width="20" height="2.5" rx="1.25" fill="#4cda6e" opacity="0.45"/><path d="M15 8C10 8 7 12.5 7 17v3h16v-3C23 12.5 20 8 15 8z" fill="#4cda6e" opacity="0.35"/><rect x="3" y="18" width="22" height="3" rx="1.5" fill="#4cda6e"/><path d="M14 4C8.5 4 5 9 5 14v4h18v-4C23 9 19.5 4 14 4z" fill="#4cda6e"/><rect x="12" y="2" width="4" height="4" rx="2" fill="#28a84e"/></svg>
+          </div>
+          <div class="rb-info">
+            <div class="rb-title">Both</div>
+            <div class="rb-sub">Operating as contractor and subcontractor across different jobs</div>
+          </div>
+          <div class="rb-arr">›</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 -->
+  <div class="screen" id="s2">
+    <div class="s2-top">
+      <div class="s2-logo">Buildwise Accounting</div>
+      <div class="s2-pill" id="role-pill">Contractor</div>
+      <button class="s2-back-btn" onclick="goBack()">← Back</button>
+    </div>
+    <div class="s2-hero">
+      <div class="s2-hl" id="s2hl">WE HANDLE <span>ALL OF IT.</span></div>
+      <div class="s2-sub" id="s2sub">You stay on site. We sort HMRC.</div>
+    </div>
+    <div class="svcs-wrap" id="svcs-wrap"></div>
+    <div class="cta-wrap" id="ctaw">
+      <button class="cta" onclick="goShare()">SORT MY MTD WITH BUILDWISE →</button>
+    </div>
+    <!-- Sticky CTA — always visible while scrolling -->
+    <div id="sticky-cta" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;padding:12px 20px;background:rgba(26,26,26,0.97);border-top:1px solid rgba(245,200,0,0.2);z-index:999;">
+      <button onclick="goShare()" style="width:100%;background:#F5C800;color:#111;border:none;border-radius:10px;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.05em;cursor:pointer;">SORT MY MTD WITH BUILDWISE →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Form -->
+  <div class="screen" id="s3">
+    <div class="top-strip">
+      <div class="ts-logo">Buildwise Accounting</div>
+      <div class="ts-tag">Built for builders</div>
+    </div>
+    <div style="padding:28px 22px 36px;display:flex;flex-direction:column;gap:18px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:#F5C800;line-height:1;flex-shrink:0;">&#10003;</div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;letter-spacing:0.03em;line-height:1.1;margin-bottom:5px;">LET'S GET IT <span style="color:#F5C800;">SORTED.</span></div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;">Leave your details and a member of our team will be in touch.</div>
+        </div>
+      </div>
+
+      <div style="background:#1a1a1a;border:1px solid rgba(245,200,0,0.2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">You are a</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#F5C800;letter-spacing:0.05em;" id="form-role-display">—</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Full name</div>
+          <input class="form-input" type="text" id="f-name" placeholder="e.g. John Smith">
+        </div>
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Contact number</div>
+          <input class="form-input" type="tel" id="f-phone" placeholder="e.g. 07700 900000">
+        </div>
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Email address</div>
+          <input class="form-input" type="email" id="f-email" placeholder="e.g. john@example.com">
+        </div>
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">Preferred time to call</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="time-sel" id="t-1200" onclick="selectTime(this,'12:00 - 2:00pm')">12:00 — 2:00pm</button>
+            <button class="time-sel" id="t-1400" onclick="selectTime(this,'2:00 - 4:00pm')">2:00 — 4:00pm</button>
+            <button class="time-sel" id="t-1600" onclick="selectTime(this,'4:00 - 5:00pm')">4:00 — 5:00pm</button>
+            <button class="time-sel" id="t-1700" onclick="selectTime(this,'5:00 - 7:00pm')">5:00 — 7:00pm</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="submitForm()" style="width:100%;background:#F5C800;color:#111;border:none;border-radius:10px;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.05em;cursor:pointer;margin-bottom:10px;">SEND MY DETAILS &#8594;</button>
+        <div style="font-size:11px;color:rgba(255,255,255,0.25);text-align:center;">We don't share your details. Ever.</div>
+      </div>
+      <button class="restart-btn" onclick="goRestart()">&#8592; Start again</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: Thank you -->
+  <div class="screen" id="s4">
+    <div class="top-strip">
+      <div class="ts-logo">Buildwise Accounting</div>
+      <div class="ts-tag">Built for builders</div>
+    </div>
+    <div style="padding:60px 22px 36px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:#F5C800;line-height:1;">&#10003;</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:34px;color:#fff;letter-spacing:0.03em;line-height:1.1;">DETAILS RECEIVED.</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.7;max-width:280px;">Thank you. A member of the Buildwise team will be in touch with you shortly.</div>
+      <div style="background:#1a1a1a;border:1px solid rgba(245,200,0,0.2);border-radius:12px;padding:16px;width:100%;text-align:left;">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;color:rgba(255,255,255,0.75);"><div style="width:7px;height:7px;border-radius:50%;background:#F5C800;flex-shrink:0;"></div>admin [at] buildwiseaccounting.co.uk</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:rgba(255,255,255,0.75);"><div style="width:7px;height:7px;border-radius:50%;background:#F5C800;flex-shrink:0;"></div>buildwiseaccounting.co.uk</div>
+      </div>
+      <button class="restart-btn" onclick="goRestart()">&#8592; Start again</button>
+    </div>
+  </div>
+
+</div>
+<script>
+var role='';
+var selectedTime='';
+
+var C=[
+  {label:'MTD & TAX',cards:[
+    {t:'MTD Registration — we sort it from day one',d:'Never dealt with MTD before? <b>We register you with HMRC, get everything set up</b> and handle it from the start.'},
+    {t:'MTD Quarterly Submissions — filed four times a year',d:'HMRC wants a report every 3 months. <b>We prepare everything and file on your behalf.</b> Every quarter, without fail.'},
+    {t:'Self Assessment — clean return, every year',d:'No last minute panic in January. <b>Tax return done properly and filed on time</b>, year after year.'},
+    {t:'Deadline Tracking — we watch every date',d:'Miss a deadline and HMRC starts the clock on fines. <b>We stay on top of every single date</b> so you never have to.'}
+  ]},
+  {label:'GETTING STARTED',cards:[
+    {t:'New contractor setup — CIS, MTD & VAT from scratch',d:'Just starting out? <b>We register you for everything you need in one go.</b> One call, fully sorted.'}
+  ]},
+  {label:'CIS',cards:[
+    {t:'CIS Monthly Returns — you pay them, we report it',d:'Every subbie payment needs reporting to HMRC monthly. <b>On time, every month, without fail.</b>'},
+    {t:'Subcontractor Verification — no guessing on the rate',d:'20% or 30% — it depends on their status. <b>We check every subbie with HMRC before a payment goes out.</b>'},
+    {t:'CIS Calculations — worked out properly',d:'Every deduction calculated correctly. <b>No errors, no overpayments, no surprises.</b>'}
+  ]},
+  {label:'INVOICING & VAT',cards:[
+    {t:'Invoices — sent professionally, on time',d:'<b>Proper invoices out the door</b> the moment the job\'s done. No more scribbled notes.'},
+    {t:'VAT Returns & Domestic Reverse Charge',d:'<b>Only if you\'re VAT registered.</b> We handle your returns and reverse charge — done right, every single time.'},
+    {t:'Retention Tracking — your money, not theirs',d:'That 5% held back on every job adds up fast. <b>We track every penny</b> and flag it the moment it\'s due back.'}
+  ]}
+];
+
+var S=[
+  {label:'MTD & TAX',cards:[
+    {t:'MTD Registration — we handle it with HMRC',d:'Don\'t know where to start with MTD? <b>We register you, get you fully set up</b> and make sure you\'re sorted from day one.'},
+    {t:'MTD Quarterly Submissions — filed four times a year',d:'HMRC wants a report every 3 months. <b>We prepare them and file on your behalf.</b> Every quarter, without fail.'},
+    {t:'Self Assessment — no January panic',d:'Tax return done properly, on time, every year. <b>We sort it. You get on with the job.</b>'},
+    {t:'Deadline Tracking — we watch every date',d:'One missed deadline leads to another. <b>We track every submission date</b> so you\'re never caught out by HMRC.'}
+  ]},
+  {label:'GETTING STARTED',cards:[
+    {t:'New to contracting? We\'ll set you up right',d:'Just gone self employed? <b>We get you registered for CIS, MTD and VAT from scratch.</b> One call, all done.'}
+  ]},
+  {label:'CIS',cards:[
+    {t:'CIS Refund Claims — get your money back',d:'Too much tax been deducted from your payments? <b>You\'re owed a refund. Most subbies never claim it.</b> We do it for you.'},
+    {t:'CIS Deductions — tracked correctly',d:'We make sure what\'s being deducted from your payments is <b>always the right amount.</b> Nothing missed, nothing wrong.'}
+  ]},
+  {label:'INVOICING & ADMIN',cards:[
+    {t:'Invoices & Timesheets — sent properly, every time',d:'<b>Professional invoices and timesheets out the door</b>, same day. No more chasing or scribbling.'},
+    {t:'Digital Document Storage — bin the shoebox',d:'Receipts, certificates, statements — <b>all stored digitally.</b> No more hunting through a drawer at year end.'},
+    {t:'VAT Returns & Domestic Reverse Charge',d:'<b>Only if you\'re VAT registered.</b> Reverse charge in construction is a minefield. We handle it so you never file it wrong.'}
+  ]}
+];
+
+var B=[
+  {label:'MTD & TAX',cards:[
+    {t:'MTD Registration — we sort it from day one',d:'Not set up yet? <b>We register you with HMRC and get everything in place</b> from the very start.'},
+    {t:'MTD Quarterly Submissions — filed four times a year',d:'Four reports a year to HMRC. <b>We prepare and file every single one</b> on your behalf.'},
+    {t:'Self Assessment — clean return, every year',d:'<b>Tax return done properly and on time</b>, every year. No stress, no surprises.'},
+    {t:'Deadline Tracking — we watch every date',d:'<b>We stay on top of every HMRC deadline</b> — both sides. You hear nothing.'}
+  ]},
+  {label:'GETTING STARTED',cards:[
+    {t:'Full setup — CIS, MTD & VAT from scratch',d:'New to running both sides? <b>We get you registered for everything in one go.</b>'}
+  ]},
+  {label:'CIS — ALL SIDES COVERED',cards:[
+    {t:'Monthly Returns — filed as contractor every month',d:'HMRC needs to know what you\'ve paid your subbies every month. <b>We handle every return.</b>'},
+    {t:'Subcontractor Verification — always the right deduction',d:'Wrong rate creates a HMRC headache. <b>We verify every subbie upfront so it never gets to that.</b>'},
+    {t:'CIS Calculations — contractor and sub side',d:'<b>Every deduction calculated correctly</b>, every payment, on both sides.'},
+    {t:'CIS Refund Claims — your money back as a sub',d:'Overpaid tax through deductions? <b>We claim your refund back.</b> Most subbies never do.'}
+  ]},
+  {label:'INVOICING & VAT',cards:[
+    {t:'Invoices & Timesheets — professional, on time',d:'<b>Proper invoices and timesheets sent out</b> the moment the job\'s done.'},
+    {t:'VAT Returns & Domestic Reverse Charge',d:'<b>Only if you\'re VAT registered.</b> We handle your returns and reverse charge on both sides. Done right, every time.'},
+    {t:'Retention Tracking — your money, not theirs',d:'That 5% held back on jobs adds up. <b>We track every penny and flag when it\'s due back.</b>'},
+    {t:'Digital Document Storage — bin the shoebox',d:'All your receipts, certs and statements <b>stored digitally</b> and always ready.'}
+  ]}
+];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+  var sticky=document.getElementById('sticky-cta');
+  if(sticky) sticky.style.display=id==='s2'?'block':'none';
+}
+
+function buildSections(sections,container){
+  sections.forEach(function(sec){
+    var lbl=document.createElement('div');
+    lbl.className='sec-lbl';
+    lbl.innerHTML='<div class="sec-txt">'+sec.label+'</div><div class="sec-line"></div>';
+    container.appendChild(lbl);
+    sec.cards.forEach(function(card){
+      var c=document.createElement('div');
+      c.className='svc';
+      c.innerHTML='<div class="svc-t">'+card.t+'</div><div class="svc-d">'+card.d+'</div>';
+      container.appendChild(c);
+    });
+  });
+}
+
+function goMain(r){
+  role=r;
+  var data=r==='contractor'?C:r==='subcontractor'?S:B;
+  var pills={contractor:'Main Contractor',subcontractor:'Subcontractor',both:'Contractor & Sub'};
+  var hls={contractor:'WE HANDLE <span style="color:#F5C800">ALL OF IT.</span>',subcontractor:'WE HANDLE <span style="color:#F5C800">ALL OF IT.</span>',both:'WE HANDLE <span style="color:#F5C800">BOTH SIDES.</span>'};
+  var subs={contractor:'You run the jobs. We run the numbers.',subcontractor:'You do the work. We sort the paperwork.',both:'Contractor on some, sub on others. We cover everything.'};
+  document.getElementById('role-pill').textContent=pills[r];
+  document.getElementById('s2hl').innerHTML=hls[r];
+  document.getElementById('s2sub').textContent=subs[r];
+  var wrap=document.getElementById('svcs-wrap');
+  wrap.innerHTML='';
+  buildSections(data,wrap);
+  show('s2');
+  setTimeout(function(){
+    var els=document.querySelectorAll('#s2 .s2-hl,#s2 .s2-sub,#s2 .sec-lbl,#s2 .svc,#s2 .cta-wrap');
+    els.forEach(function(el,i){setTimeout(function(){el.classList.add('v');},80+i*55);});
+  },80);
+}
+
+function goBack(){
+  document.querySelectorAll('#s2 .s2-hl,#s2 .s2-sub,#s2 .sec-lbl,#s2 .svc,#s2 .cta-wrap').forEach(function(el){el.classList.remove('v');});
+  show('s1');
+}
+
+function goShare(){
+  var pills={contractor:'Main Contractor',subcontractor:'Subcontractor',both:'Contractor & Sub'};
+  var rd=document.getElementById('form-role-display');
+  if(rd) rd.textContent=pills[role]||'—';
+  selectedTime='';
+  document.querySelectorAll('.time-sel').forEach(function(b){b.classList.remove('active');});
+  show('s3');
+}
+
+function selectTime(btn,t){
+  selectedTime=t;
+  document.querySelectorAll('.time-sel').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+function submitForm(){
+  var name=document.getElementById('f-name').value.trim();
+  var phone=document.getElementById('f-phone').value.trim();
+  var email=document.getElementById('f-email').value.trim();
+  if(!name){alert('Please enter your full name.');return;}
+  if(!phone){alert('Please enter your contact number.');return;}
+  if(!email){alert('Please enter your email address.');return;}
+  if(!selectedTime){alert('Please select a preferred time to call.');return;}
+  show('s4');
+}
+
+function goRestart(){
+  document.querySelectorAll('#s2 .s2-hl,#s2 .s2-sub,#s2 .sec-lbl,#s2 .svc,#s2 .cta-wrap').forEach(function(el){el.classList.remove('v');});
+  selectedTime='';
+  document.querySelectorAll('.time-sel').forEach(function(b){b.classList.remove('active');});
+  var fn=document.getElementById('f-name');if(fn)fn.value='';
+  var fp=document.getElementById('f-phone');if(fp)fp.value='';
+  var fe=document.getElementById('f-email');if(fe)fe.value='';
+  show('s1');
+}
+</script>
+</body>
+</html>
